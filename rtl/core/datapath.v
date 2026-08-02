@@ -21,7 +21,7 @@ module datapath(
     wire [27:0] jumpshift;
  
     
-    flopr #(32) pcreg(clk, reset, pcnext, pc);
+    dff #(32) pcreg(clk, reset, pcnext, pc);
     adder       pcadd1(pc, 32'd4, pcplus4);
     signext     se(instr[15:0], signimm);
     assign      signimmsh = signimm << 2;             
