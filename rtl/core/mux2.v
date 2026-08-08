@@ -1,14 +1,14 @@
 `timescale 1ns/1ps
 
-module mux2_32(out,in1,in2,sel);
+module mux2 #(parameter WIDTH = 32)
+(
+    input  [WIDTH-1:0] d0,
+    input  [WIDTH-1:0] d1,
+    input               s,
+    output [WIDTH-1:0] y
+);
 
-parameter v = 31 ;
 
-input [v:0] in1,in2;
-input sel;
-output [v:0] out;
-
-assign out = (sel==1'b0)?in1:in2;
-
+    assign y = s ? d1 : d0;
 
 endmodule

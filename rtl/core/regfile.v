@@ -1,36 +1,25 @@
 `timescale 1ns/1ps
 
-module register_32(rd_data1,rd_data2,source_reg1,source_reg2,dest_reg,write_data,reset,write,clk);
-
-parameter v = 31 ;
-
-input [4:0] source_reg1,source_reg2,dest_reg;
-input [v:0]write_data ;
-input reset,clk,write;
-
-output [v:0] rd_data1,rd_data2;
-
-reg [v:0] register [0:v];
-integer i;
+module regfile(
+    input         clk,
+    input         we3,          // write enable (from control unit: regwrite)
+    input  [4:0]  ra1, ra2,     // read addresses  (rs, rt)
+    input  [4:0]  wa3,          // write address   (rd or rt, chosen by regdst mux)
+    input  [31:0] wd3,          // write data      (ALU result or memory data)
+    output [31:0] rd1, rd2      // read data outputs (srcA, writedata)
+);
+    reg [31:0] rf [31:0];
+ 
 
 
+    // Synchronous write
+    always @(posedge clk)
+        if (we3) rf[wa3] <= wd3;
 
-assign  rd_data1 = register[source_reg1];
-assign  rd_data2 = register[source_reg2];
+        
+ 
+    // Asynchronous (combinational) read, with $0 hardwired to 0
+    assign rd1 = (ra1 != 5'b0) ? rf[ra1] : 32'b0;
+    assign rd2 = (ra2 != 5'b0) ? rf[ra2] : 32'b0;
 
-
-
-always@(posedge clk)
-begin
-    if(reset)
-    begin
-        for(i=0; i<=v; i++)
-        register[i]=0;
-    end
-    else
-    begin
-        if(write)
-        register[dest_reg]<=write_data;
-    end
-end
 endmodule
